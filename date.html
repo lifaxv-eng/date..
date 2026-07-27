@@ -1,0 +1,292 @@
+'use client';
+
+import { useState } from 'react';
+import { Copy, Send, Heart } from 'lucide-react';
+
+export default function InvitationRencontre() {
+  const [step, setStep] = useState('welcome'); // welcome, form, confirmation
+  const [heure, setHeure] = useState('19:00');
+  const [lieu, setLieu] = useState('');
+  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const handleNon = () => {
+    // Le bouton "Non" fait une animation mais ne se passe rien
+    const btnNon = document.getElementById('btnNon');
+    btnNon?.classList.add('shake');
+    setTimeout(() => btnNon?.classList.remove('shake'), 500);
+  };
+
+  const handleOui = () => {
+    setStep('form');
+    setError('');
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!lieu.trim()) {
+      setError('Veuillez choisir un lieu ✨');
+      return;
+    }
+    setStep('confirmation');
+  };
+
+  const generateMessage = () => {
+    return `📅 Rendez-vous confirmé!\n\n📆 Date: 10 août\n🕐 Heure: ${heure}\n📍 Lieu: ${lieu}\n\n💌 Oui, je viens! ❤️`;
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generateMessage());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareViaWhatsApp = () => {
+    const text = encodeURIComponent(generateMessage());
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-purple-100 flex items-center justify-center p-4">
+      <style>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-10px); }
+          75% { transform: translateX(10px); }
+        }
+        .shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        .float {
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .slide-in {
+          animation: slideIn 0.6s ease-out;
+        }
+      `}</style>
+
+      {step === 'welcome' && (
+        <div className="slide-in max-w-md w-full">
+          {/* Enveloppe */}
+          <div className="relative">
+            {/* Rabat d'enveloppe */}
+            <div className="absolute inset-0 bg-gradient-to-b from-pink-200 to-pink-100 rounded-t-3xl transform -skew-y-3 h-1/3"></div>
+            
+            {/* Corps de l'enveloppe */}
+            <div className="relative bg-white rounded-lg shadow-2xl overflow-hidden border-2 border-pink-100 p-8">
+              {/* Décoration */}
+              <div className="absolute top-0 right-0 text-6xl opacity-20 float">💌</div>
+              
+              <div className="relative z-10">
+                {/* Titre */}
+                <h1 className="text-4xl font-bold text-center mb-2 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                  Une invitation
+                </h1>
+                
+                {/* Sous-titre */}
+                <p className="text-center text-gray-600 mb-8 text-lg">
+                  pour toi 💕
+                </p>
+
+                {/* Message */}
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-2xl p-6 mb-8 border border-pink-200">
+                  <p className="text-center text-gray-700 leading-relaxed">
+                    <span className="text-2xl">✨</span>
+                    <br />
+                    <span className="text-lg font-semibold text-gray-800">
+                      Veux-tu passer du temps avec moi?
+                    </span>
+                    <br />
+                    <span className="text-gray-600 mt-2 block">
+                      Le <strong>10 août</strong>, dans un endroit spécial...
+                    </span>
+                  </p>
+                </div>
+
+                {/* Boutons */}
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={handleOui}
+                    className="flex-1 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg active:scale-95"
+                  >
+                    ❤️ Oui!
+                  </button>
+                  
+                  <button
+                    id="btnNon"
+                    onClick={handleNon}
+                    className="flex-1 bg-gray-300 text-gray-600 font-bold py-3 px-6 rounded-xl cursor-not-allowed opacity-60 shadow-lg"
+                  >
+                    ❌ Non
+                  </button>
+                </div>
+
+                {/* Footer */}
+                <p className="text-center text-sm text-gray-500 mt-6">
+                  ✨ Dis oui... ✨
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === 'form' && (
+        <div className="slide-in max-w-md w-full">
+          <div className="bg-white rounded-lg shadow-2xl p-8 border-2 border-pink-100">
+            <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+              Presque là... 💫
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Heure */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  🕐 À quelle heure?
+                </label>
+                <input
+                  type="time"
+                  value={heure}
+                  onChange={(e) => setHeure(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:border-pink-500 text-lg"
+                />
+              </div>
+
+              {/* Lieu */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  📍 Où?
+                </label>
+                <select
+                  value={lieu}
+                  onChange={(e) => setLieu(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:border-pink-500 text-lg"
+                >
+                  <option value="">Choisis un lieu...</option>
+                  <option value="Café du centre-ville">☕ Café du centre-ville</option>
+                  <option value="Restaurant au bord de l'eau">🍽️ Restaurant au bord de l'eau</option>
+                  <option value="Parc avec vue">🌳 Parc avec vue</option>
+                  <option value="Cinema">🎬 Cinéma</option>
+                  <option value="Plage au coucher de soleil">🏖️ Plage au coucher de soleil</option>
+                  <option value="Musée">🎨 Musée</option>
+                  <option value="Marché nocturne">🌙 Marché nocturne</option>
+                </select>
+              </div>
+
+              {error && (
+                <p className="text-red-500 text-center font-semibold">{error}</p>
+              )}
+
+              {/* Boutons */}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep('welcome')}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-all"
+                >
+                  Retour
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg active:scale-95"
+                >
+                  Confirmer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {step === 'confirmation' && (
+        <div className="slide-in max-w-md w-full">
+          <div className="bg-white rounded-lg shadow-2xl p-8 border-2 border-green-300 overflow-hidden relative">
+            {/* Confettis */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-4 left-8 text-2xl animate-bounce">🎉</div>
+              <div className="absolute top-6 right-6 text-2xl animate-bounce" style={{ animationDelay: '0.2s' }}>💝</div>
+              <div className="absolute bottom-8 left-4 text-2xl animate-bounce" style={{ animationDelay: '0.4s' }}>✨</div>
+            </div>
+
+            <div className="relative z-10">
+              {/* Titre */}
+              <h2 className="text-3xl font-bold text-center mb-2 text-green-600">
+                C'est confirmé! 🎉
+              </h2>
+              <p className="text-center text-gray-600 mb-6">Rendez-vous prévu</p>
+
+              {/* Détails du rendez-vous */}
+              <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-6 mb-6 border-2 border-green-200">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📅</span>
+                    <div>
+                      <p className="text-sm text-gray-600">Date</p>
+                      <p className="text-lg font-bold text-gray-800">10 août</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🕐</span>
+                    <div>
+                      <p className="text-sm text-gray-600">Heure</p>
+                      <p className="text-lg font-bold text-gray-800">{heure}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📍</span>
+                    <div>
+                      <p className="text-sm text-gray-600">Lieu</p>
+                      <p className="text-lg font-bold text-gray-800">{lieu}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message à partager */}
+              <div className="bg-gray-100 rounded-xl p-4 mb-6 text-sm text-gray-700 border-l-4 border-pink-500">
+                <p className="whitespace-pre-wrap">{generateMessage()}</p>
+              </div>
+
+              {/* Boutons de partage */}
+              <div className="space-y-3 mb-4">
+                <button
+                  onClick={copyToClipboard}
+                  className="w-full flex items-center justify-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-3 px-6 rounded-lg transition-all"
+                >
+                  <Copy size={20} />
+                  {copied ? 'Copié!' : 'Copier'}
+                </button>
+                
+                <button
+                  onClick={shareViaWhatsApp}
+                  className="w-full flex items-center justify-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 font-bold py-3 px-6 rounded-lg transition-all"
+                >
+                  <Send size={20} />
+                  Envoyer sur WhatsApp
+                </button>
+              </div>
+
+              {/* Bouton retour */}
+              <button
+                onClick={() => {
+                  setStep('welcome');
+                  setLieu('');
+                  setHeure('19:00');
+                }}
+                className="w-full
